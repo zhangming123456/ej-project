@@ -25,6 +25,7 @@
 
 <script>
   import { CellFormPreview, Group, Cell } from 'vux'
+
   export default {
     components: {
       CellFormPreview,
@@ -42,12 +43,14 @@
           other: {
             stalls: {
               key: 4,
+              list: [false],
               value: '',
               type: 'V',
               label: '电压'
             },
             status: {
               key: 5,
+              list: [false],
               value: '',
               type: '',
               label: '状态'
@@ -56,36 +59,42 @@
           list: [
             {
               key: 6,
+              list: [false],
               value: '',
               type: 'V',
               label: '电压'
             },
             {
               key: 7,
+              list: [false],
               value: '',
               type: 'KW',
               label: '机型'
             },
             {
               key: 8,
+              list: [false],
               value: '',
               type: 'C',
               label: '线盘温度'
             },
             {
               key: 9,
+              list: [false],
               value: '',
               type: 'C',
               label: '锅底温度'
             },
             {
               key: 10,
+              list: [false],
               value: '',
               type: 'KHZ',
               label: '频率'
             },
             {
               key: 11,
+              list: [false],
               value: '',
               type: 'A',
               label: '目标电流'
@@ -145,8 +154,7 @@
     created () {
       this.$emit('transfer', this.transferObj)
     },
-    methods: {
-    }
+    methods: {}
   }
 </script>
 
@@ -173,7 +181,7 @@
     ._Image {
       width: 114px;
       height: 85px;
-      background: #fff url(/static/libs/images/i-con.png) no-repeat -677px -117px;
+      background: #fff url('../../static/libs/images/i-con.png') no-repeat -677px -117px;
       background-size: 960px 840px;
       display: inline-block;
     }

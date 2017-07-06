@@ -4,11 +4,12 @@ import VueResource from 'vue-resource'
 import VueRouter from 'vue-router'
 import { querystring } from 'vux'
 
-import App from './App'
+import App from './App.vue'
 import store from './store'
 import router from './router'
 import './filters'
-// import Api from './store/Api/api'
+import Utils from './utils'
+import Api from './store/api/api'
 
 import '../static/libs/css/reset.css'
 import '../static/libs/css/common.less'
@@ -28,29 +29,29 @@ import '../static/libs/css/common.less'
     placeholderPic()
   }
 }(document))
+
 /**
  * 截取token值
  * @returns {{paramStr: string, paramObj}}
  * @private
  */
-const __getUrlQuerystring = function () {
+const __getUrlQuerystring = (function () {
   // 获取url地址
   const url = window.location.href
   let [start, end] = [url.indexOf('/?'), url.indexOf('#/')]
   if (start >= 0 && end >= 0 && start + 2 < end - 1) {
     const param = url.substring(start + 2, end)
     return {
-      paramStr: param,
-      paramObj: querystring.parse(param)
+      Str: param,
+      Obj: querystring.parse(param)
     }
   }
-}
+}())
 Vue.prototype.__getUrlQuerystring = __getUrlQuerystring
-Vue.prototype.__$ = function () {
-  return require('zepto')
-}
-import Utils from './utils'
-// Api.api.getParamPath(__getUrlQuerystring())
+Api.getParamPath(__getUrlQuerystring)
+/**
+ * 独立指令
+ */
 Vue.directive('set-suffix', {
   isLiteral: true,
   update (el, obj) {
@@ -60,12 +61,12 @@ Vue.directive('set-suffix', {
     console.log(Utils(ele).addClass(document, 'suffix-temperature'))
   }
 })
+// 路由钩子
 router.beforeEach((to, from, next) => {
   // ...
   // console.log(this)
   next()
 })
-
 Vue.use(VueRouter)
 Vue.use(VueResource)
 FastClick.attach(document.body)
@@ -77,4 +78,4 @@ new Vue({
   store,
   router,
   render: h => h(App)
-}).$mount('#app')
+}).$mount('#app-box')

@@ -1,5 +1,5 @@
 <template>
-  <div class='tap-box'>
+  <div id="tap-setting" class='tap-box'>
     <nav class='nav'>
       <tab class='tap-fixed' :line-width='1' active-color="#178dff" v-model="index">
         <tab-item class="vux-center" :selected="demo === item" v-for="(item, index) in list"
@@ -9,7 +9,7 @@
       </tab>
     </nav>
     <!--tap内容-->
-    <ul>
+    <ul class="tap-connet">
       <li v-if='index === 0'>
         <group class="settingChioce clearfix">
           <ul class="clearfix">
@@ -32,56 +32,47 @@
                 <i></i><span>自定义档位</span>
               </div>
               <div class="customPower">
-                <x-switch title="自定义档位" v-model="data.customizeStalls.list[0]"></x-switch>
-                <p><span>自定义档位</span><i class="slider fr">滑块</i></p>
-                <p><span>当前位值</span><i class="slider fr">88</i></p>
+                <x-switch class="item" title="自定义档位" v-model="data.customizeStalls.list[0]"></x-switch>
+                <x-input class="item" title="当前位值" :disabled="true"
+                         v-model="data.customizeStalls.value" :text-align="'right'"></x-input>
               </div>
               <div class="smallTitle">
                 选择档位
               </div>
               <!--选择档位-->
-              <ul class="nextChioce clearfix">
-                <li><i>1</i><span>23</span>
-                  <small class="fr fonSize">请输入当前档位值，范围0~255</small>
-                </li>
-                <li><i>2</i><span>23</span>
-                  <small class="fr fonSize">请输入当前档位值，范围0~255</small>
-                </li>
-                <li><i>3</i><span>23</span>
-                  <small class="fr fonSize">请输入当前档位值，范围0~255</small>
-                </li>
-                <li><i>4</i><span>23</span>
-                  <small class="fr fonSize">请输入当前档位值，范围0~255</small>
-                </li>
-                <li><i>5</i><span>23</span>
-                  <small class="fr fonSize">请输入当前档位值，范围0~255</small>
-                </li>
-                <li><i>6</i><span>23</span>
-                  <small class="fr fonSize">请输入当前档位值，范围0~255</small>
-                </li>
-                <li><i>7</i><span>23</span>
-                  <small class="fr fonSize">请输入当前档位值，范围0~255</small>
-                </li>
-                <li><i>8</i><span>23</span>
-                  <small class="fr fonSize">请输入当前档位值，范围0~255</small>
-                </li>
-              </ul>
+              <group class="nextChioce clearfix">
+                <div v-for="(v,i) in data.SelectGear">
+                  <cell class="item" :title='i+1'>
+                    <x-input class="item-input" placeholder="请输入当前档位值，范围0~255"
+                             placeholder-align='right'
+                             v-model='v.value' text-align='right' @on-enter='submit(v)'
+                             @on-blur='submit(v)'
+                             :max="3" @on-change="onChange(v)"></x-input>
+                  </cell>
+                </div>
+              </group>
             </li>
             <!--锅具判断-->
-            <li class="clearfix nextLine">
+            <li class="clearfix nextLine customPower">
               <div class="titlePower clearfix">
-                <i></i><span>锅具判断</span>
+                <i></i><span>{{data.PotToJudge.label}}</span>
               </div>
-              <p class="allLine"><span class="fl bigSize">锅具判断校准</span>
-                <small class="fr">请输入校准值0~500</small>
-              </p>
+              <group>
+                <cell class="item" :title="data.PotToJudge.label+'校准'">
+                  <x-input class="item-input" placeholder="请输入当前档位值，范围0~500"
+                           placeholder-align='right'
+                           v-model='data.PotToJudge.value' text-align='right' @on-enter='submit(data.PotToJudge)'
+                           @on-blur='onChange(data.PotToJudge)'
+                           :max="3" @on-change="submit(data.PotToJudge)"></x-input>
+                </cell>
+              </group>
             </li>
             <!--温度开关-->
-            <li>
+            <li class="customPower">
               <div class="titlePower">
                 <p><i></i><span>温度开关</span></p>
               </div>
-              <p class="allLine"><span class="bigSize">温度开关使能</span></p>
+              <x-switch class="item" title="温度开关使能" v-model="data.customizeStalls.list[0]"></x-switch>
             </li>
           </ul>
         </group>
@@ -94,104 +85,84 @@
               <div class="titlePower">
                 <i></i><span>电压设定</span>
               </div>
-              <ul class="nextChioce clearfix whiteBg">
-                <li><i>1</i><span>电压保护使能</span>
-                  <small class="fr fonSize">滑块</small>
-                </li>
-                <li><i>2</i><span>高压</span>
-                  <small class="fr fonSize">请输入当前档位值，范围0~255</small>
-                </li>
-                <li><i>3</i><span>低压</span>
-                  <small class="fr fonSize">请输入当前档位值，范围0~255</small>
-                </li>
-                <li><i>4</i><span>校准</span>
-                  <small class="fr fonSize">请输入当前档位值，范围0~255</small>
-                </li>
-              </ul>
+              <group class="nextChioce clearfix">
+                <x-switch class="item" title="电压保护使能" v-model="data.VoltageSetting.value"></x-switch>
+                <div v-for="(v,i) in data.VoltageSetting">
+                  <cell class="item" v-if="i > 0" :title='v.label'>
+                    <x-input class="item-input" placeholder="请输入电压值，范围0~500"
+                             placeholder-align='right' type='number'
+                             v-model='v.value' text-align='right' @on-enter='submit(v)'
+                             @on-blur='onChange(v)'
+                             :max="3" :min='1' @on-change="submit(v)"></x-input>
+                  </cell>
+                </div>
+
+              </group>
             </li>
             <!--温度设定-->
             <li>
               <div class="titlePower">
                 <i></i><span>温度设定</span>
               </div>
-              <ul class="nextChioce clearfix whiteBg">
-                <li><i>1</i><span>模块最高温度设定</span>
-                  <small class="fr fonSize">请输入当前档位值，范围0~255</small>
-                </li>
-                <li><i>2</i><span>线盘温度保护点</span>
-                  <small class="fr fonSize">请输入当前档位值，范围0~255</small>
-                </li>
-                <li><i>3</i><span>锅底温度保护点</span>
-                  <small class="fr fonSize">请输入当前档位值，范围0~255</small>
-                </li>
-              </ul>
+              <group class="nextChioce clearfix">
+                <cell class="item" :title='data.TemperatureSetting[0].label'>
+                  <x-input class="item-input" placeholder="请输入温度值，范围0~100"
+                           placeholder-align='right'
+                           v-model='data.TemperatureSetting[0].value' text-align='right'
+                           @on-enter='submit(data.TemperatureSetting[0])'
+                           @on-blur='onChange(data.TemperatureSetting[0])'
+                           :max="3" @on-change="submit(data.TemperatureSetting[0])"></x-input>
+                </cell>
+                <div v-for="(v,i) in data.TemperatureSetting">
+                  <cell class="item" v-if="i > 0" :title='v.label'>
+                    <x-input class="item-input" placeholder="请输入温度值，范围0~300"
+                             placeholder-align='right'
+                             v-model='v.value' text-align='right' @on-enter='submit(v)'
+                             @on-blur='onChange(v)'
+                             :max="3" @on-change="submit(v)"></x-input>
+                  </cell>
+                </div>
+              </group>
             </li>
             <!--其他设定-->
             <li>
               <div class="titlePower">
                 <i></i><span>其他设定</span>
               </div>
-              <ul class="nextChioce clearfix whiteBg">
-                <li><i>1</i><span>恒功率使能</span>
-                  <small class="fr fonSize">请输入当前档位值，范围0~255</small>
-                </li>
-                <li><i>2</i><span>起始电压</span>
-                  <small class="fr fonSize">请输入当前档位值，范围0~255</small>
-                </li>
-                <li><i>3</i><span>缺相检测使能</span>
-                  <small class="fr fonSize">请输入当前档位值，范围0~255</small>
-                </li>
-                <li><i>3</i><span>磁控开关复位使能</span>
-                  <small class="fr fonSize">请输入当前档位值，范围0~255</small>
-                </li>
-              </ul>
+              <!--OtherSettings-->
+              <group class="nextChioce clearfix whiteBg">
+                <x-switch class="item" title="恒功率使能" v-model="data.OtherSettings[0].value"></x-switch>
+                <cell class="item" :title='data.OtherSettings[1].label'>
+                  <x-input class="item-input" placeholder="请输入电压值，范围0~500"
+                           placeholder-align='right'
+                           v-model='data.OtherSettings[1].value' text-align='right'
+                           @on-enter='submit(data.OtherSettings[1])'
+                           @on-blur='onChange(data.OtherSettings[1])'
+                           @on-change='submit(data.OtherSettings[1])'
+                           :max='3'></x-input>
+                </cell>
+                <x-switch class="item" title="缺相检测使能" v-model="data.OtherSettings[2].value"></x-switch>
+                <x-switch class="item" title="磁控开关复位使能" v-model="data.OtherSettings[3].value"></x-switch>
+              </group>
             </li>
           </ul>
         </div>
       </li>
       <li v-if='index === 2'>
-        <div class="displayer clearfix">
-          <div class="screenBox clearfix">
-            <button class="screenBtn">专模专款</button>
-            <button class="smallBtn">应用</button>
-          </div>
-          <div class="screenBox clearfix">
-            <button class="screenBtn">专模专款</button>
-            <button class="smallBtn">应用</button>
-          </div>
-          <div class="screenBox clearfix">
-            <button class="screenBtn">专模专款</button>
-            <button class="smallBtn">应用</button>
-          </div>
-          <div class="screenBox clearfix">
-            <button class="screenBtn">专模专款</button>
-            <button class="smallBtn">应用</button>
-          </div>
-          <div class="screenBox clearfix">
-            <button class="screenBtn">专模专款</button>
-            <button class="smallBtn">应用</button>
-          </div>
-          <div class="screenBox clearfix">
-            <button class="screenBtn">专模专款</button>
-            <button class="smallBtn">应用</button>
-          </div>
-          <div class="screenBox clearfix">
-            <button class="screenBtn">专模专款</button>
-            <button class="smallBtn">应用</button>
-          </div>
-          <div class="screenBox clearfix">
-            <button class="screenBtn">专模专款</button>
-            <button class="smallBtn">应用</button>
-          </div>
-          <div class="screenBox clearfix">
-            <button class="screenBtn">专模专款</button>
-            <button class="smallBtn">应用</button>
-          </div>
-          <div class="screenBox clearfix">
-            <button class="screenBtn">专模专款</button>
-            <button class="smallBtn">应用</button>
-          </div>
-        </div>
+        <!--:style='"background-position: "+data.DisplaySelection[0].list[i][0]+"px "+data.DisplaySelection[0].list[i][1]+"px"'-->
+        <ul class="displayer clearfix powerNumber button-box">
+          <li class="screenBox clearfix" v-for="(item,i) in 10">
+            <checker class='button-power button-display' type='radio'
+                     @on-change='submit(data.DisplaySelection[0].value)'
+                     v-model="data.DisplaySelection[0].value"
+                     default-item-class="button-power-default button-display-default"
+                     selected-item-class="button-power-selected">
+              <div class="button-btn screenBtn"></div>
+              <checker-item :key="i" :value="i">{{data.DisplaySelection[0].label}}
+              </checker-item>
+            </checker>
+          </li>
+        </ul>
       </li>
       <li v-if='index === 3'>
         <div class="argtSetting">
@@ -200,28 +171,35 @@
               <div class="titlePower">
                 <i></i><span>时间设定</span>
               </div>
-              <ul class="nextChioce clearfix whiteBg">
-                <li><i>1</i><span>授权工作时间</span>
-                  <small class="fr fonSize">请输入当前档位值，范围0~255</small>
-                </li>
-                <li><i>2</i><span>上电时间</span>
-                  <small class="fr fonSize">请输入当前档位值，范围0~255</small>
-                </li>
-                <li><i>3</i><span>工作时间</span>
-                  <small class="fr fonSize">请输入当前档位值，范围0~255</small>
-                </li>
-              </ul>
+              <group class="nextChioce clearfix whiteBg">
+                <cell class="item" :title='data.TimeSetting[0].label'>
+                  <x-input class="item-input" placeholder="请输入时间，范围0 ~ 9999小时"
+                           placeholder-align='right' typeof='number'
+                           v-model='data.TimeSetting[0].value' text-align='right'
+                           @on-enter='submit(data.TimeSetting[0])'
+                           @on-blur='onChange(data.TimeSetting[0])'
+                           @on-change='submit(data.TimeSetting[0])'
+                           :max='4'></x-input>
+                </cell>
+                <datetime class="item" v-model="data.TimeSetting[1].value" format="HH:mm"
+                          :display-format="formatValueFunction"
+                          @on-change="onChange"
+                          :title="data.TimeSetting[1].label"></datetime>
+                <datetime class="item" v-model="data.TimeSetting[2].value" format="HH:mm"
+                          :display-format="formatValueFunction"
+                          @on-change="onChange"
+                          :title="data.TimeSetting[2].label"></datetime>
+              </group>
             </li>
             <!--控制设定-->
             <li>
+              <!--ControlSettings-->
               <div class="titlePower">
-                <i></i><span>时间设定</span>
+                <i></i><span>控制设定</span>
               </div>
-              <ul class="nextChioce clearfix whiteBg">
-                <li><i>3</i><span>控制设定</span>
-                  <small class="fr fonSize">滑块</small>
-                </li>
-              </ul>
+              <group class="nextChioce clearfix whiteBg">
+                <x-switch class="item" title="控制设定" v-model="data.ControlSettings[0].value"></x-switch>
+              </group>
             </li>
           </ul>
         </div>
@@ -237,6 +215,7 @@
 </template>
 
 <script>
+  import Utils from '../utils'
   import {
     Group,
     Cell,
@@ -245,10 +224,10 @@
     XHeader,
     Checker,
     CheckerItem,
-    Flexbox,
-    FlexboxItem,
     ColorPicker,
-    XSwitch
+    XSwitch,
+    XInput,
+    Datetime
   } from 'vux'
 
   const list = () => ['功能及档位', '电压及温度', '显示器选择', '高级设置']
@@ -261,10 +240,10 @@
       XHeader,
       Checker,
       CheckerItem,
-      Flexbox,
-      FlexboxItem,
       ColorPicker,
-      XSwitch
+      XSwitch,
+      XInput,
+      Datetime
     },
     name: 'Setting',
     data () {
@@ -305,7 +284,257 @@
             type: 'D',
             isFlag: false,
             label: '档位选择'
-          }
+          },
+          SelectGear: [
+            {
+              key: 23,
+              list: [],
+              value: '',
+              oldValue: '',
+              type: '',
+              isFlag: false,
+              label: '选择档位'
+            },
+            {
+              key: 24,
+              list: [],
+              value: '',
+              oldValue: '',
+              type: '',
+              isFlag: false,
+              label: '选择档位'
+            },
+            {
+              key: 25,
+              list: [],
+              value: '',
+              oldValue: '',
+              type: '',
+              isFlag: false,
+              label: '选择档位'
+            },
+            {
+              key: 26,
+              list: [],
+              value: '',
+              oldValue: '',
+              type: '',
+              isFlag: false,
+              label: '选择档位'
+            },
+            {
+              key: 27,
+              list: [],
+              value: '',
+              oldValue: '',
+              type: '',
+              isFlag: false,
+              label: '选择档位'
+            },
+            {
+              key: 28,
+              list: [],
+              value: '',
+              oldValue: '',
+              type: '',
+              isFlag: false,
+              label: '选择档位'
+            },
+            {
+              key: 29,
+              list: [],
+              value: '',
+              oldValue: '',
+              type: '',
+              isFlag: false,
+              label: '选择档位'
+            },
+            {
+              key: 30,
+              list: [],
+              value: '',
+              oldValue: '',
+              type: '',
+              isFlag: false,
+              label: '选择档位'
+            }
+          ],
+          PotToJudge: {
+            key: 32,
+            list: [],
+            value: '',
+            oldValue: '',
+            type: '',
+            isFlag: false,
+            label: '锅具判断'
+          },
+          VoltageSetting: [
+            {
+              key: 33,
+              list: [],
+              value: false,
+              oldValue: false,
+              type: '',
+              isFlag: false,
+              label: '电压保护使能'
+            },
+            {
+              key: 34,
+              list: [],
+              value: '',
+              oldValue: '',
+              type: '',
+              isFlag: false,
+              label: '电压'
+            },
+            {
+              key: 35,
+              list: [],
+              value: '',
+              oldValue: '',
+              type: '',
+              isFlag: false,
+              label: '低压'
+            },
+            {
+              key: 36,
+              list: [],
+              value: '',
+              oldValue: '',
+              type: '',
+              isFlag: false,
+              label: '校准'
+            }
+          ],
+          TemperatureSetting: [
+            {
+              key: 37,
+              list: [],
+              value: '',
+              oldValue: '',
+              type: '',
+              isFlag: false,
+              label: '模块最高温度设定'
+            },
+            {
+              key: 38,
+              list: [],
+              value: '',
+              oldValue: '',
+              type: '',
+              isFlag: false,
+              label: '线盘温度保护点'
+            },
+            {
+              key: 39,
+              list: [],
+              value: '',
+              oldValue: '',
+              type: '',
+              isFlag: false,
+              label: '锅底温度保护点'
+            }
+          ],
+          OtherSettings: [
+            {
+              key: 40,
+              list: [],
+              value: false,
+              oldValue: false,
+              type: '',
+              isFlag: false,
+              label: '恒功率使能'
+            },
+            {
+              key: 41,
+              list: [],
+              value: '',
+              oldValue: '',
+              type: '',
+              isFlag: false,
+              label: '起始电压'
+            },
+            {
+              key: 42,
+              list: [],
+              value: false,
+              oldValue: false,
+              type: '',
+              isFlag: false,
+              label: '缺相检测使能'
+            },
+            {
+              key: 43,
+              list: [],
+              value: false,
+              oldValue: false,
+              type: '',
+              isFlag: false,
+              label: '磁控开关复位使能'
+            }
+          ],
+          TimeSetting: [
+            {
+              key: 40,
+              list: [],
+              value: '',
+              oldValue: '',
+              type: '',
+              isFlag: false,
+              label: '授权工作时间'
+            },
+            {
+              key: 41,
+              list: [],
+              value: '',
+              oldValue: '',
+              type: '',
+              isFlag: false,
+              label: '上电时间'
+            },
+            {
+              key: 42,
+              list: [],
+              value: '',
+              oldValue: '',
+              type: '',
+              isFlag: false,
+              label: '工作时间'
+            }
+          ],
+          ControlSettings: [
+            {
+              key: 40,
+              list: [],
+              value: false,
+              oldValue: false,
+              type: '',
+              isFlag: false,
+              label: '控制设定'
+            }
+          ],
+          DisplaySelection: [
+            {
+              key: 40,
+              list: [
+                [-1000, -1000],
+                [-735, -31.5],
+                [-120, -120],
+                [-120, -120],
+                [-120, -120],
+                [-120, -120],
+                [-120, -120],
+                [-120, -120],
+                [-120, -120],
+                [-120, -120]
+              ],
+              value: 0,
+              oldValue: 0,
+              type: '',
+              isFlag: false,
+              label: '应用'
+            }
+          ]
         }
       }
     },
@@ -317,6 +546,13 @@
       }
     },
     methods: {
+      onChange (item) {
+        console.log('onChange', item)
+        if (item.value === '') {
+          item.value = ''
+          item.oldValue = ''
+        }
+      },
       onScrollBottom () {
         console.log(this.index)
       },
@@ -327,13 +563,21 @@
         return this.listH[this.index]
       },
       submit (item) {
-        if (item.value === '') {
-          item.value = item.oldValue
-        }
+        console.log('submit', item.value)
+//        if (item.value === '') {
+//          item.value = item.oldValue
+//        }
         if (item.oldValue !== item.value) {
           item.oldValue = item.value
-          console.log(item)
+          console.log(item, 'submitEnd')
         }
+      },
+      formatValueFunction (val) {
+        return Utils().formatValueFunction(val)
+      },
+      getStyle (i) {
+//        let str = 'background-position: ' + this.data.DisplaySelection[0].list[i][0] + 'px ' + this.data.DisplaySelection[0].list[i][1] + 'px;'
+        return ''
       }
     },
     watch: {
@@ -352,6 +596,15 @@
     }
 
   }
+
+  .weui-switch:checked, .weui-switch-cp__input:checked ~ .weui-switch-cp__box {
+    border-color: #2490ff !important;
+    background-color: #2490ff !important;
+  }
+
+  .weui-cell_switch .weui-cell__ft {
+    height: inherit;
+  }
 </style>
 <style scoped lang='less'>
   /*功率和档位*/
@@ -362,23 +615,22 @@
   }
 
   .titlePower {
+    font-size: 13px;
     height: 33px;
     line-height: 33px;
     background: #ebebeb;
-  }
-
-  .titlePower i {
-    width: 5px;
-    height: 5px;
-    background: #2490ff;
-    border-radius: 50%;
-    position: relative;
-    top: -2px;
-    margin: 0 5px 0 10px;
-  }
-
-  .titlePower span {
-    color: #adaaaa;
+    i {
+      width: 5px;
+      height: 5px;
+      background: #2490ff;
+      border-radius: 50%;
+      position: relative;
+      top: -2px;
+      margin: 0 5px 0 10px;
+    }
+    span {
+      color: #adaaaa;
+    }
   }
 
   .powerNumber {
@@ -403,13 +655,36 @@
     }
   }
 
-  .customPower p {
-    height: 44px;
-    line-height: 44px;
-    font-size: 16px;
-    margin-left: 21px;
-    padding-right: 15px;
-    border-bottom: 1px solid #ebebeb;
+  .customPower {
+    .item {
+      padding: 5.5px 15px 5.5px 23px;
+      height: 32px;
+      line-height: 32px;
+      font-size: 14.5px;
+      border-bottom: 0.5px solid #ebebeb;
+      .item-input {
+        width: 200px;
+        padding-right: 0 !important;
+        font-size: 12.5px !important;
+        color: #000;
+      }
+    }
+
+  }
+
+  .nextChioce {
+    .item {
+      padding: 5.5px 15px 5.5px 23px;
+      height: 32px;
+      line-height: 32px;
+      font-size: 13px;
+      .item-input {
+        width: 200px;
+        padding-right: 0 !important;
+        font-size: 12.5px !important;
+        color: #000;
+      }
+    }
   }
 
   li .smallTitle {
@@ -417,15 +692,8 @@
     height: 23px;
     line-height: 23px;
     color: #adaaaa;
-    padding-left: 22px;
-  }
-
-  .nextChioce li {
-    height: 44px;
-    line-height: 44px;
-    margin-left: 21px;
-    padding-right: 15px;
-    border-bottom: 1px solid #EBEBEB;
+    padding-left: 20px;
+    font-size: 10.5px;
   }
 
   li small {
@@ -453,8 +721,8 @@
   }
 
   .isFooter {
-    position: fixed;
-    bottom: 0;
+    position: relative;
+    padding: 200px 0 0 0;
     width: 100%;
   }
 
@@ -490,24 +758,94 @@
   /*显示器选择*/
   .displayer {
     background: #ebebeb;
+    padding: 7.5px 2px;
   }
 
   .screenBox {
     float: left;
-    width: 120px;
-    margin: 10px 0 10px 42px
-  }
-
-  .screenBox button {
-    border: 1px solid #2c6afd;
-    border-radius: 7px;
-    color: #2c6afd;
-    background: #ebebeb;
-  }
-
-  .screenBox .screenBtn {
-    width: 120px;
-    height: 80px;
+    width: 50%;
+    text-align: center;
+    position: relative;
+    .screenBtn {
+      margin-bottom: 9.5px;
+      width: 120px;
+      height: 80px;
+    }
+    .button-btn {
+      display: inline-block;
+      border: 1px solid #2c6afd;
+      border-radius: 7px;
+      color: #2c6afd;
+      background: #ebebeb;
+      background: url('../../static/libs/images/i-con.png') no-repeat;
+      background-size: 960px 840px;
+    }
+    &:nth-of-type(1) {
+      .button-btn {
+        background: none;
+        &:before {
+          content: '专属专款';
+          position: absolute;
+          margin: 0;
+          top: 14px;
+          left: 0;
+          bottom: 62px;
+          right: 0;
+          line-height: 82px;
+        }
+      }
+    }
+    &:nth-of-type(2) {
+      .button-btn {
+        background-position: -726px -18px;
+      }
+    }
+    &:nth-of-type(3) {
+      .button-btn {
+        background-position: -584px -18px;
+      }
+    }
+    &:nth-of-type(4) {
+      .button-btn {
+        background-position: -26px -109px;
+      }
+    }
+    &:nth-of-type(5) {
+      .button-btn {
+        background-position: -307px -20px;
+      }
+    }
+    &:nth-of-type(6) {
+      .button-btn {
+        background-position: -155px -113px;
+      }
+    }
+    &:nth-of-type(7) {
+      .button-btn {
+        background-position: -170px -17px;
+      }
+    }
+    &:nth-of-type(8) {
+      .button-btn {
+        background-position: -33px -20px;
+      }
+    }
+    &:nth-of-type(9) {
+      .button-btn {
+        background-position: -290px -117px;
+      }
+    }
+    &:nth-of-type(10) {
+      .button-btn {
+        background-position: -445px -20px;
+      }
+    }
+    .button-display-default {
+      border-radius: 8px !important;
+      width: 70px !important;
+      height: 20px !important;
+      line-height: 20px !important;
+    }
   }
 
   .screenBox .smallBtn {
@@ -516,29 +854,44 @@
     margin: 20px 22px;
   }
 
+  .tap-setting {
+    position: fixed;
+    top: 46px;
+    height: 35px;
+    width: 100%;
+    z-index: 9999;
+
+  }
+
   .tap-box {
     position: relative;
-    margin-top: 46px;
   }
 
   .nav {
-    position: relative;
-    height: 35px;
+    /*position: relative;*/
+    /*height: 35px;*/
+    /*top: 0;*/
+    padding-top: 46px;
+    position: fixed;
+    width: 100%;
     top: 0;
+    z-index: 9999;
     .tap-fixed {
-      position: fixed;
-      top: 46px;
-      height: 35px;
-      width: 100%;
-      z-index: 9999;
+      height: 100%;
       .vux-center {
+        height: 100%;
         line-height: 35px;
-        font-size: 11px;
+        font-size: 11.5px;
       }
     }
+  }
+
+  .tap-connet {
+    padding-top: 82px;
   }
 
   .scroller-box {
     top: 46px;
   }
+
 </style>

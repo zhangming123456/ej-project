@@ -9,6 +9,8 @@
 import Vue from 'vue'
 import Api from './api'
 
+console.log(Api.paramPath, 123)
+
 function apiFactory (api) {
   return (id = null) => Vue.http[api.method](
     api.url,

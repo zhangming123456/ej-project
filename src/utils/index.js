@@ -7,7 +7,7 @@ import Reg from './reg'
 class Utils extends Reg {
   constructor (val, ...args) {
     super(...args)
-    this.val = val
+    this.val = val || ''
   }
 
   hasClass (obj, cls) {
@@ -38,6 +38,10 @@ class Utils extends Reg {
       this.addClass(a, cls)
     }
     return this
+  }
+
+  formatValueFunction (val) {
+    return val.replace(/:/g, '小时') + '分钟'
   }
 }
 

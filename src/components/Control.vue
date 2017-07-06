@@ -26,10 +26,12 @@
                @on-blur='submit(backData.setTemperature)'
                :max="3"></x-input>
       <datetime class='item' :format="'HH:mm'" :title="'预约时间'" @on-change='submit(backData.Appointment)'
+                :display-format="formatValueFunction"
                 v-model="backData.Appointment.value"
                 placeholder="请选择时间">
       </datetime>
       <datetime class='item' :format="'HH:mm'" :title="'定时时间'" @on-change='submit(backData.TimingTime)'
+                :display-format="formatValueFunction"
                 v-model="backData.TimingTime.value"
                 placeholder="请选择时间"></datetime>
       <x-number :title="'调整档位'" v-model="backData.AdjustStalls.value" :min="0" :max="5"
@@ -44,8 +46,6 @@
     Cell,
     DatetimeRange,
     XButton,
-    Flexbox,
-    FlexboxItem,
     Checker,
     CheckerItem,
     Datetime,
@@ -53,6 +53,7 @@
     XNumber,
     XInput
   } from 'vux'
+  import Utils from '../utils'
 
   export default {
     components: {
@@ -60,8 +61,6 @@
       Cell,
       DatetimeRange,
       XButton,
-      Flexbox,
-      FlexboxItem,
       Checker,
       CheckerItem,
       Datetime,
@@ -183,7 +182,7 @@
         /**
          * 实时接收数据
          */
-        this.$store.dispatch('createdRunMonitor', 'ws://123.207.167.163:9010/ajaxchattest').then((res) => {
+        this.$store.dispatch('createdRunMonitor', 'ws://iot.ej-cloud.com:8083/mqtt').then((res) => {
           _this.socketRunMonitor = res.receive(() => {
             _this.socketRunMonitor.message(data => {
               console.log(data.data.data, 2222)
@@ -197,6 +196,9 @@
        */
       send (a) {
         this.socketRunMonitor.sendDate(a)
+      },
+      formatValueFunction (val) {
+        return Utils().formatValueFunction(val)
       }
     },
     beforeDestroy () {
@@ -204,7 +206,7 @@
        * 离开页面注销SocketService
        */
       this.socketRunMonitor.closeSocket()
-    }
+    },
   }
 </script>
 <style>
@@ -247,7 +249,7 @@
         float: left;
         width: 114px;
         height: 85px;
-        background: #fff url(/static/libs/images/i-con.png) no-repeat -677px -116px;
+        background: #fff url('../../static/libs/images/i-con.png') no-repeat -677px -116px;
         background-size: 960px 840px;
         display: inline-block;
       }

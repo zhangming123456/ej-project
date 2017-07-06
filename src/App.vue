@@ -28,9 +28,7 @@
       }
     },
     created () {
-      setInterval(function () {
 
-      }, 1000)
     },
     methods: {
       transferFun (a) {

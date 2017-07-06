@@ -1,10 +1,12 @@
 var path = require('path')
 var utils = require('./utils')
+
+var projectRoot = path.resolve(__dirname, '../')
+const vuxLoader = require('vux-loader')
+const px2rem = require('postcss-px2rem')
+
 var config = require('../config')
 var vueLoaderConfig = require('./vue-loader.conf')
-var projectRoot = path.resolve(__dirname, '../')
-var px2rem = require('postcss-px2rem')
-const vuxLoader = require('vux-loader')
 
 function resolve (dir) {
   return path.join(__dirname, '..', dir)
@@ -25,7 +27,6 @@ let webpackConfig = {
     extensions: ['.js', '.vue', '.json'],
     alias: {
       'vue$': 'vue/dist/vue.esm.js',
-      // 'static': path.resolve(__dirname, '../static'),
       '@': resolve('src')
     }
   },
@@ -69,6 +70,7 @@ let webpackConfig = {
     ]
   }
 }
+
 module.exports = vuxLoader.merge(webpackConfig, {
   plugins: ['vux-ui', 'progress-bar', 'duplicate-style']
 })
