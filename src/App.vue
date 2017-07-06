@@ -32,6 +32,7 @@
     },
     methods: {
       transferFun (a) {
+        console.log(a)
         this.transferObj = a
       }
     }

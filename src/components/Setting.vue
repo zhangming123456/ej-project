@@ -859,7 +859,7 @@
     top: 46px;
     height: 35px;
     width: 100%;
-    z-index: 9999;
+    z-index: 9990;
 
   }
 
@@ -875,7 +875,7 @@
     position: fixed;
     width: 100%;
     top: 0;
-    z-index: 9999;
+    z-index: 9998;
     .tap-fixed {
       height: 100%;
       .vux-center {
