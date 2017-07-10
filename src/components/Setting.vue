@@ -240,35 +240,9 @@
 
 <script>
   import Utils from '../utils'
-  import {
-    Group,
-    Cell,
-    Tab,
-    TabItem,
-    XHeader,
-    Checker,
-    CheckerItem,
-    ColorPicker,
-    XSwitch,
-    XInput,
-    Datetime
-  } from 'vux'
 
   const list = () => ['功能及档位', '电压及温度', '显示器选择', '高级设置']
   export default {
-    components: {
-      Group,
-      Cell,
-      Tab,
-      TabItem,
-      XHeader,
-      Checker,
-      CheckerItem,
-      ColorPicker,
-      XSwitch,
-      XInput,
-      Datetime
-    },
     name: 'Setting',
     data () {
       return {

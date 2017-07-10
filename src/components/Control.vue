@@ -48,35 +48,9 @@
   </div>
 </template>
 <script>
-  import {
-    Group,
-    Cell,
-    DatetimeRange,
-    XButton,
-    Checker,
-    CheckerItem,
-    Datetime,
-    PopupPicker,
-    XNumber,
-    XInput
-  } from 'vux'
-  import MaskedInput from 'vue-text-mask'
   import Utils from '../utils'
 
   export default {
-    components: {
-      Group,
-      Cell,
-      DatetimeRange,
-      XButton,
-      Checker,
-      CheckerItem,
-      Datetime,
-      PopupPicker,
-      XNumber,
-      XInput,
-      MaskedInput
-    },
     data () {
       return {
         socketRunMonitor: {}, // SocketService实例
@@ -165,15 +139,16 @@
       }
     },
     created () {
-      this.$emit('transfer', this.transferObj)
-//      this.data.modeDemo = this.data.mode[0]
+      this.$emit('transfer', this.transferObj)//子传父
       // 进入页面开启SocketService
       this.openSocket()
     },
     methods: {
+      // on-change事件
       onChange (item) {
         item.isFlag = Utils.isMaxNum(item.value, item.max)
       },
+      // 按钮触发事件
       onButtonEvent (item) {
         if (item) {
           if (item.value === '') {
@@ -184,10 +159,12 @@
           }
         }
       },
+      // 时间选择器提交事件
       dateTimeSubmit (item) {
         item.isFlag = true
         this.submit(item)
       },
+      // 按钮提交事件
       buttonSubmit (item) {
         if (item.value) {
           item.value = 0
@@ -197,6 +174,7 @@
         item.isFlag = true
         this.submit(item)
       },
+      // 表单提交事件
       submit (item) {
         console.log(arguments, 'submit')
         if (item.isFlag) {

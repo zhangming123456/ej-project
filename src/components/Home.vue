@@ -24,13 +24,9 @@
 </template>
 
 <script>
-  import { Group, Cell } from 'vux'
+
 
   export default {
-    components: {
-      Group,
-      Cell
-    },
     data () {
       return {
         socketService: null,

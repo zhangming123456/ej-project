@@ -24,14 +24,8 @@
 </template>
 
 <script>
-  import { CellFormPreview, Group, Cell } from 'vux'
 
   export default {
-    components: {
-      CellFormPreview,
-      Group,
-      Cell
-    },
     data () {
       return {
         msg: 'Hello World!',

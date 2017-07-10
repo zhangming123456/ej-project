@@ -2,7 +2,43 @@ import Vue from 'vue'
 import FastClick from 'fastclick'
 import VueResource from 'vue-resource'
 import VueRouter from 'vue-router'
-import { querystring, AlertPlugin } from 'vux'
+import {
+  querystring,
+  AlertPlugin,
+  XHeader,
+  CellFormPreview,
+  Group,
+  Cell,
+  DatetimeRange,
+  XButton,
+  Checker,
+  CheckerItem,
+  Datetime,
+  PopupPicker,
+  XNumber,
+  XInput,
+  Tab,
+  TabItem,
+  ColorPicker,
+  XSwitch
+} from 'vux'
+
+Vue.component(XHeader.name, XHeader)
+Vue.component(CellFormPreview.name, CellFormPreview)
+Vue.component(Group.name, Group)
+Vue.component(Cell.name, Cell)
+Vue.component(DatetimeRange.name, DatetimeRange)
+Vue.component(XButton.name, XButton)
+Vue.component(XNumber.name, XNumber)
+Vue.component(XInput.name, XInput)
+Vue.component(XSwitch.name, XSwitch)
+Vue.component(Checker.name, Checker)
+Vue.component(CheckerItem.name, CheckerItem)
+Vue.component(Datetime.name, Datetime)
+Vue.component(PopupPicker.name, PopupPicker)
+Vue.component(Tab.name, Tab)
+Vue.component(TabItem.name, TabItem)
+Vue.component(ColorPicker.name, ColorPicker)
 
 import App from './App.vue'
 import store from './store'

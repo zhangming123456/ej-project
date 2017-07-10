@@ -11,12 +11,12 @@
 </template>
 
 <script>
-  import { XHeader } from 'vux'
+//  import { XHeader } from 'vux'
 
   export default {
-    components: {
-      XHeader
-    },
+//    components: {
+//      XHeader
+//    },
     name: 'app',
     data () {
       return {
