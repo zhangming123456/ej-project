@@ -3,16 +3,16 @@
     <div class="bgcolor-header">
       <div class="logo"></div>
       <ul class="control_info">
-        <li>当前档位：<span>60</span></li>
+        <li>当前档位：<span></span></li>
         <li>运行温度：<span>95℃</span></li>
         <li>运行时间：<span>1小时50分</span></li>
       </ul>
     </div>
     <div class="quarantine"></div>
     <div style="display: block;"></div>
-    <group class="operation">
+    <group class="operation nextChioce">
       <cell title='选择模式' class='item'>
-        <checker class='from-box' type='radio' @on-change='submit(backData.SelectMode)'
+        <checker class='from-box' type='radio' @on-change='onButtonEvent(backData.SelectMode)'
                  v-model="backData.SelectMode.value"
                  default-item-class="from-button"
                  selected-item-class="from-button-selected">
@@ -20,24 +20,31 @@
           </checker-item>
         </checker>
       </cell>
-      <!--v-set-suffix="{data:backData.setTemperature,elName:'input'}"-->
-      <x-input title="设置温度" :type='"number"' placeholder="请选择范围值 0~300" placeholder-align='right'
-               v-model='backData.setTemperature.value' text-align='right' @on-enter='submit(backData.setTemperature)'
-               @on-blur='submit(backData.setTemperature)'
-               :max="3"></x-input>
-      <datetime class='item' :format="'HH:mm'" :title="'预约时间'" @on-change='submit(backData.Appointment)'
+      <!--@on-change='onChange(backData.setTemperature)'-->
+      <x-input title="设置温度" placeholder="请选择范围值 0~300"
+               placeholder-align='right'
+               text-align='right' :is-type='max300'
+               v-model='backData.setTemperature.value'
+               @on-change='onChange(backData.setTemperature)'
+               @on-enter='submit(backData.setTemperature)'
+               @on-blur='submit(backData.setTemperature)' :max='3'></x-input>
+      <datetime class='item' :format="'HH:mm'" :title="'预约时间'" @on-change='dateTimeSubmit(backData.Appointment)'
                 :display-format="formatValueFunction"
                 v-model="backData.Appointment.value"
                 placeholder="请选择时间">
       </datetime>
-      <datetime class='item' :format="'HH:mm'" :title="'定时时间'" @on-change='submit(backData.TimingTime)'
+      <datetime class='item' :format="'HH:mm'" :title="'定时时间'" @on-change='dateTimeSubmit(backData.TimingTime)'
                 :display-format="formatValueFunction"
                 v-model="backData.TimingTime.value"
                 placeholder="请选择时间"></datetime>
-      <x-number :title="'调整档位'" v-model="backData.AdjustStalls.value" :min="0" :max="5"
-                @on-change="submit(backData.AdjustStalls)"></x-number>
+      <x-number button-style='round' :title="'调整档位'" v-model="backData.AdjustStalls.value" :min="0" :max="5"
+                @on-change="onButtonEvent(backData.AdjustStalls)"></x-number>
     </group>
-    <x-button class="suspend" type="primary">开始</x-button>
+    <!--:class='{"suspend-selected":backData.StatusButton.value==1}'-->
+    <x-button class="suspend" :class='{"suspend-selected":backData.StatusButton.value==1}'
+              @click.native='buttonSubmit(backData.StatusButton,$event)'>
+      {{backData.StatusButton.list[backData.StatusButton.value]}}
+    </x-button>
   </div>
 </template>
 <script>
@@ -53,6 +60,7 @@
     XNumber,
     XInput
   } from 'vux'
+  import MaskedInput from 'vue-text-mask'
   import Utils from '../utils'
 
   export default {
@@ -66,7 +74,8 @@
       Datetime,
       PopupPicker,
       XNumber,
-      XInput
+      XInput,
+      MaskedInput
     },
     data () {
       return {
@@ -92,7 +101,10 @@
             key: 55,
             value: 0,
             oldValue: 0,
+            typeStr: 'number',
             type: 'C',
+            max: 300,
+            min: 0,
             isFlag: false,
             label: '设置温度'
           },
@@ -112,6 +124,15 @@
             type: '',
             isFlag: false,
             label: '选择模式'
+          },
+          StatusButton: {
+            key: 56,
+            list: ['开始', '暂停'],
+            value: 0,
+            oldValue: 0,
+            type: '',
+            isFlag: false,
+            label: '待机状态'
           }
         },
         data: {
@@ -150,28 +171,51 @@
       this.openSocket()
     },
     methods: {
-      onChange (val) {
-        console.log('change', val)
+      onChange (item) {
+        item.isFlag = Utils.isMaxNum(item.value, item.max)
       },
-      submit (item) {
-        console.log(item)
+      onButtonEvent (item) {
         if (item) {
           if (item.value === '') {
             item.value = item.oldValue
-          }
-          if (item.oldValue !== item.value) {
-            item.oldValue = item.value
-            console.log(item)
-            this.send(item.value)
+          } else if (item.oldValue !== item.value) {
+            item.isFlag = true
+            this.submit(item)
           }
         }
       },
-      formatFilter (value, name) {
-        return value[0] + value[1]
+      dateTimeSubmit (item) {
+        item.isFlag = true
+        this.submit(item)
       },
-      isTypeReg (a) {
-        this.backData.setTemperature.isFlag = false
-        return {valid: false, msg: '错误信息'}
+      buttonSubmit (item) {
+        if (item.value) {
+          item.value = 0
+        } else {
+          item.value = 1
+        }
+        item.isFlag = true
+        this.submit(item)
+      },
+      submit (item) {
+        console.log(arguments, 'submit')
+        if (item.isFlag) {
+          item.isFlag = false
+          item.oldValue = item.value
+          this.send(item.value)
+          console.log('发送数据')
+        }
+        return false
+      },
+      max300: function (value) {
+//        console.log(value, 2833)
+        return {
+          valid: /[0-9]+/.test(value) && value <= 300 && value >= 0,
+          msg: '错误信息'
+        }
+      },
+      formatFilter (value) {
+        return value[0] + value[1]
       },
       /**
        * 开启数据通道并实时接收数据
@@ -197,16 +241,17 @@
       send (a) {
         this.socketRunMonitor.sendDate(a)
       },
-      formatValueFunction (val) {
-        return Utils().formatValueFunction(val)
+      formatValueFunction (value) {
+        return Utils.formatValueFunction(value)
       }
-    },
+    }
+    ,
     beforeDestroy () {
       /**
        * 离开页面注销SocketService
        */
       this.socketRunMonitor.closeSocket()
-    },
+    }
   }
 </script>
 <style>
@@ -269,6 +314,22 @@
       width: 100%;
       background: #ebebeb;
 
+    }
+    .nextChioce {
+      .item {
+        padding: 5.5px 15px 5.5px 23px;
+        height: 32px;
+        line-height: 32px;
+        font-size: 13px;
+        .item-input {
+          height: 32px;
+          text-align: right;
+          width: 200px;
+          padding-right: 0 !important;
+          font-size: 12.5px !important;
+          color: #000;
+        }
+      }
     }
     .operation {
       display: block;
@@ -336,6 +397,9 @@
       color: white;
       font-size: 17px;
       border-radius: 5px;
+    }
+    .suspend-selected {
+      background: #6bff2b;
     }
   }
 </style>

@@ -19,7 +19,7 @@
                 <i></i><span>{{value.label}}</span>
               </div>
               <div class="powerNumber">
-                <checker class='button-power' type='radio' @on-change='submit(value)' v-model="value.value"
+                <checker class='button-power' type='radio' @on-change='onButtonEvent(value)' v-model="value.value"
                          default-item-class="button-power-default"
                          selected-item-class="button-power-selected">
                   <checker-item v-for="(item,i) in value.list" :key="i" :value="i">{{item}}</checker-item>
@@ -32,8 +32,9 @@
                 <i></i><span>自定义档位</span>
               </div>
               <div class="customPower">
-                <x-switch class="item" title="自定义档位" v-model="data.customizeStalls.list[0]"></x-switch>
-                <x-input class="item" title="当前位值" :disabled="true"
+                <x-switch class="item" title="自定义档位" v-model="data.customizeStalls.list[0]"
+                          @on-change='buttonSubmit(data.customizeStalls)'></x-switch>
+                <x-input class="item" title="当前档位值" :disabled="true"
                          v-model="data.customizeStalls.value" :text-align="'right'"></x-input>
               </div>
               <div class="smallTitle">
@@ -45,9 +46,12 @@
                   <cell class="item" :title='i+1'>
                     <x-input class="item-input" placeholder="请输入当前档位值，范围0~255"
                              placeholder-align='right'
-                             v-model='v.value' text-align='right' @on-enter='submit(v)'
+                             text-align='right' novalidate :icon-type='v.iconType'
+                             v-model='v.value'
+                             @on-change='onChange(v)'
+                             @on-enter='submit(v)'
                              @on-blur='submit(v)'
-                             :max="3" @on-change="onChange(v)"></x-input>
+                             :max="3"></x-input>
                   </cell>
                 </div>
               </group>
@@ -57,13 +61,16 @@
               <div class="titlePower clearfix">
                 <i></i><span>{{data.PotToJudge.label}}</span>
               </div>
-              <group>
+              <group style='position: relative'>
                 <cell class="item" :title="data.PotToJudge.label+'校准'">
                   <x-input class="item-input" placeholder="请输入当前档位值，范围0~500"
                            placeholder-align='right'
-                           v-model='data.PotToJudge.value' text-align='right' @on-enter='submit(data.PotToJudge)'
-                           @on-blur='onChange(data.PotToJudge)'
-                           :max="3" @on-change="submit(data.PotToJudge)"></x-input>
+                           v-model='data.PotToJudge.value' text-align='right'
+                           novalidate :icon-type='data.PotToJudge.iconType'
+                           @on-change='onChange(data.PotToJudge)'
+                           @on-enter='submit(data.PotToJudge)'
+                           @on-blur='submit(data.PotToJudge)'
+                           :max="3"></x-input>
                 </cell>
               </group>
             </li>
@@ -72,7 +79,8 @@
               <div class="titlePower">
                 <p><i></i><span>温度开关</span></p>
               </div>
-              <x-switch class="item" title="温度开关使能" v-model="data.customizeStalls.list[0]"></x-switch>
+              <x-switch class="item" title="温度开关使能" v-model="data.TemperatureSwitches.list[0]"
+                        @on-change='buttonSubmit(data.TemperatureSwitches)'></x-switch>
             </li>
           </ul>
         </group>
@@ -289,72 +297,96 @@
             {
               key: 23,
               list: [],
-              value: '',
-              oldValue: '',
+              value: 0,
+              oldValue: 0,
               type: '',
+              max: 255,
+              min: 0,
+              iconType: '',
               isFlag: false,
               label: '选择档位'
             },
             {
               key: 24,
               list: [],
-              value: '',
-              oldValue: '',
+              value: 0,
+              oldValue: 0,
               type: '',
+              max: 255,
+              min: 0,
+              iconType: '',
               isFlag: false,
               label: '选择档位'
             },
             {
               key: 25,
               list: [],
-              value: '',
-              oldValue: '',
+              value: 0,
+              oldValue: 0,
               type: '',
+              max: 255,
+              min: 0,
+              iconType: '',
               isFlag: false,
               label: '选择档位'
             },
             {
               key: 26,
               list: [],
-              value: '',
-              oldValue: '',
+              value: 0,
+              oldValue: 0,
               type: '',
+              max: 255,
+              min: 0,
+              iconType: '',
               isFlag: false,
               label: '选择档位'
             },
             {
               key: 27,
               list: [],
-              value: '',
-              oldValue: '',
+              value: 0,
+              oldValue: 0,
               type: '',
+              max: 255,
+              min: 0,
+              iconType: '',
               isFlag: false,
               label: '选择档位'
             },
             {
               key: 28,
               list: [],
-              value: '',
-              oldValue: '',
+              value: 0,
+              oldValue: 0,
               type: '',
+              max: 255,
+              min: 0,
+              iconType: '',
               isFlag: false,
               label: '选择档位'
             },
             {
               key: 29,
               list: [],
-              value: '',
-              oldValue: '',
+              value: 0,
+              oldValue: 0,
               type: '',
+              max: 255,
+              min: 0,
+              iconType: '',
               isFlag: false,
               label: '选择档位'
             },
             {
               key: 30,
               list: [],
-              value: '',
-              oldValue: '',
+              value: 0,
+              oldValue: 0,
               type: '',
+              max: 255,
+              min: 0,
+              iconType: '',
               isFlag: false,
               label: '选择档位'
             }
@@ -365,8 +397,20 @@
             value: '',
             oldValue: '',
             type: '',
+            max: 500,
+            min: 0,
+            iconType: '',
             isFlag: false,
             label: '锅具判断'
+          },
+          TemperatureSwitches: {
+            key: 31,
+            list: [false],
+            value: 0,
+            oldValue: 0,
+            type: 'D',
+            isFlag: false,
+            label: '档位选择'
           },
           VoltageSetting: [
             {
@@ -516,18 +560,7 @@
           DisplaySelection: [
             {
               key: 40,
-              list: [
-                [-1000, -1000],
-                [-735, -31.5],
-                [-120, -120],
-                [-120, -120],
-                [-120, -120],
-                [-120, -120],
-                [-120, -120],
-                [-120, -120],
-                [-120, -120],
-                [-120, -120]
-              ],
+              list: [],
               value: 0,
               oldValue: 0,
               type: '',
@@ -547,10 +580,52 @@
     },
     methods: {
       onChange (item) {
-        console.log('onChange', item)
+        console.log(Utils.isMaxNum(item.value, item.max))
+        item.isFlag = Utils.isMaxNum(item.value, item.max)
         if (item.value === '') {
-          item.value = ''
-          item.oldValue = ''
+          item.iconType = ''
+        } else if (item.isFlag) {
+          item.iconType = 'success'
+        } else {
+          item.iconType = 'error'
+        }
+      },
+      onButtonEvent (item) {
+        if (item) {
+          if (item.value === '') {
+            item.value = item.oldValue
+          } else if (item.oldValue !== item.value) {
+            item.isFlag = true
+            this.submit(item)
+          }
+        }
+      },
+      dateTimeSubmit (item) {
+        item.isFlag = true
+        this.submit(item)
+      },
+      buttonSubmit (item) {
+//        if (item.list[0]) {
+//          item.value = 0
+//        } else {
+//          item.value = 1
+//        }
+        item.isFlag = true
+        this.submit(item)
+      },
+      submit (item) {
+        console.log(arguments, 'submit')
+        if (item.isFlag) {
+          item.isFlag = false
+          item.oldValue = item.value
+          console.log('发送数据')
+        }
+        return false
+      },
+      max300: function (value) {
+//        console.log(value, 2833)
+        return {
+          valid: /[0-9]+/.test(value) && value <= 300 && value >= 0
         }
       },
       onScrollBottom () {
@@ -562,18 +637,8 @@
       getHeight () {
         return this.listH[this.index]
       },
-      submit (item) {
-        console.log('submit', item.value)
-//        if (item.value === '') {
-//          item.value = item.oldValue
-//        }
-        if (item.oldValue !== item.value) {
-          item.oldValue = item.value
-          console.log(item, 'submitEnd')
-        }
-      },
       formatValueFunction (val) {
-        return Utils().formatValueFunction(val)
+        return Utils.formatValueFunction(val)
       },
       getStyle (i) {
 //        let str = 'background-position: ' + this.data.DisplaySelection[0].list[i][0] + 'px ' + this.data.DisplaySelection[0].list[i][1] + 'px;'
@@ -594,7 +659,6 @@
     .vux-no-group-title {
       margin-top: 0 !important;
     }
-
   }
 
   .weui-switch:checked, .weui-switch-cp__input:checked ~ .weui-switch-cp__box {
@@ -658,28 +722,28 @@
   .customPower {
     .item {
       padding: 5.5px 15px 5.5px 23px;
-      height: 32px;
-      line-height: 32px;
-      font-size: 14.5px;
+      height: 32px !important;
+      line-height: 32px !important;
+      font-size: 14.5px !important;
       border-bottom: 0.5px solid #ebebeb;
       .item-input {
-        width: 200px;
+        width: 210px;
         padding-right: 0 !important;
         font-size: 12.5px !important;
         color: #000;
       }
     }
-
   }
 
   .nextChioce {
     .item {
       padding: 5.5px 15px 5.5px 23px;
-      height: 32px;
-      line-height: 32px;
-      font-size: 13px;
+      height: 32px !important;
+      line-height: 32px !important;
+      font-size: 13px !important;
+      border-bottom: 0.5px solid #ebebeb;
       .item-input {
-        width: 200px;
+        width: 210px;
         padding-right: 0 !important;
         font-size: 12.5px !important;
         color: #000;

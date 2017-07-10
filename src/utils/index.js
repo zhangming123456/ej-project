@@ -43,8 +43,34 @@ class Utils extends Reg {
   formatValueFunction (val) {
     return val.replace(/:/g, '小时') + '分钟'
   }
+
+  isNumber (val) {
+    return this.numberReg.test(val)
+  }
+
+  isString (val) {
+    return typeof val === 'string'
+  }
+
+  isMaxNum (val, max) {
+    return this.isNumber(val) && val <= max
+  }
+
+  strSplit (str, start, end) {
+    if (!this.isString(str)) {
+      return
+    }
+    let a = str.split('')
+    if (start >= 0) {
+      return a.slice(start, end).join('')
+    } else {
+      return a.slice(start).join('')
+    }
+  }
+
+  unStrSplit (str, end) {
+    return this.strSplit(str, 0, end)
+  }
 }
 
-export default (val) => {
-  return new Utils(val)
-}
+export default new Utils()

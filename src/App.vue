@@ -28,7 +28,20 @@
       }
     },
     created () {
-
+      console.log(this.__getUrlQuerystring, 1122)
+      var _this = this
+      if (!(this.__getUrlQuerystring && this.__getUrlQuerystring.Obj && this.__getUrlQuerystring.Obj.token)) {
+        this.$vux.alert.show({
+          title: '提示',
+          content: '用户未登录',
+          onShow () {
+//            _this.$router.go('baidu.com')
+          },
+          onHide () {
+//            _this.$router.go(-1) // 没有token值 用户未登录跳回上一个页面
+          }
+        })
+      }
     },
     methods: {
       transferFun (a) {

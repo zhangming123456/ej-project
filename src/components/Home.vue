@@ -52,25 +52,26 @@
         path: _this.__getUrlQuerystring ? _this.__getUrlQuerystring.Obj.topic : '/',
         clientId: _this.__getUrlQuerystring ? _this.__getUrlQuerystring.Obj.did : ''
       }
-      this.$store.dispatch('createdPaho', param).then((res) => {
-        res.onMessageArrived = function (data) {
-          console.log(data, 111)
-        }
-        res.onConnectionLost = function (data) {
-          console.log(data, 222)
-        }
-        res.connect({
-          onSuccess: function () {
-            _this.socketService = res
-            _this.sockerSuccess(res)
-          }
+//      this.$store.dispatch('createdPaho', param).then((res) => {
+//        res.onMessageArrived = function (data) {
+//          console.log(data, 111)
+//        }
+//        res.onConnectionLost = function (data) {
+//          console.log(data, 222)
+//        }
+//        res.connect({
+//          onSuccess: function () {
+//            _this.socketService = res
+//            _this.sockerSuccess(res)
+//          }
+//        })
+//
+//      })
+      if (!this.__getUrlQuerystring) {
+        this.$store.dispatch('createdRunMonitorSocket').then((res) => {
+
         })
-
-      })
-      this.$store.dispatch('createdRunMonitorSocket').then((res) => {
-
-      })
-
+      }
     },
     methods: {
       sockerSuccess (res) {

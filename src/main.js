@@ -2,7 +2,7 @@ import Vue from 'vue'
 import FastClick from 'fastclick'
 import VueResource from 'vue-resource'
 import VueRouter from 'vue-router'
-import { querystring } from 'vux'
+import { querystring, AlertPlugin } from 'vux'
 
 import App from './App.vue'
 import store from './store'
@@ -67,6 +67,7 @@ router.beforeEach((to, from, next) => {
   // console.log(this)
   next()
 })
+Vue.use(AlertPlugin)
 Vue.use(VueRouter)
 Vue.use(VueResource)
 FastClick.attach(document.body)

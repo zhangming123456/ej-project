@@ -5,6 +5,7 @@
 export default class Reg {
   constructor () {
     this.degreesCelsius = /^[0-9]+[\℃]{1}$/
+    this.numberReg = /^\d+$/
   }
 
   isDegreesCelsius (val) {
