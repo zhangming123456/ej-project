@@ -65,7 +65,7 @@
                 <cell class="item" :title="data.PotToJudge.label+'校准'">
                   <x-input class="item-input" placeholder="请输入当前档位值，范围0~500"
                            placeholder-align='right'
-                           v-model='data.PotToJudge.value' text-align='right'
+                           v-model='data.PotToJudge.value'
                            novalidate :icon-type='data.PotToJudge.iconType'
                            @on-change='onChange(data.PotToJudge)'
                            @on-enter='submit(data.PotToJudge)'
@@ -94,14 +94,18 @@
                 <i></i><span>电压设定</span>
               </div>
               <group class="nextChioce clearfix">
-                <x-switch class="item" title="电压保护使能" v-model="data.VoltageSetting.value"></x-switch>
+                <x-switch class="item" title="电压保护使能" v-model="data.VoltageSetting.value"
+                          @on-change='buttonSubmit(data.VoltageSetting)'></x-switch>
                 <div v-for="(v,i) in data.VoltageSetting">
                   <cell class="item" v-if="i > 0" :title='v.label'>
                     <x-input class="item-input" placeholder="请输入电压值，范围0~500"
-                             placeholder-align='right' type='number'
-                             v-model='v.value' text-align='right' @on-enter='submit(v)'
-                             @on-blur='onChange(v)'
-                             :max="3" :min='1' @on-change="submit(v)"></x-input>
+                             placeholder-align='right'
+                             novalidate :icon-type='v.iconType'
+                             v-model='v.value' text-align='right'
+                             @on-change='onChange(v)'
+                             @on-enter='submit(v)'
+                             @on-blur='submit(v)'
+                             :max="3" :min='1'></x-input>
                   </cell>
                 </div>
 
@@ -117,17 +121,22 @@
                   <x-input class="item-input" placeholder="请输入温度值，范围0~100"
                            placeholder-align='right'
                            v-model='data.TemperatureSetting[0].value' text-align='right'
+                           novalidate :icon-type='data.TemperatureSetting[0].iconType'
+                           @on-change='onChange(data.TemperatureSetting[0])'
                            @on-enter='submit(data.TemperatureSetting[0])'
-                           @on-blur='onChange(data.TemperatureSetting[0])'
-                           :max="3" @on-change="submit(data.TemperatureSetting[0])"></x-input>
+                           @on-blur='submit(data.TemperatureSetting[0])'
+                           :max="3"></x-input>
                 </cell>
                 <div v-for="(v,i) in data.TemperatureSetting">
                   <cell class="item" v-if="i > 0" :title='v.label'>
                     <x-input class="item-input" placeholder="请输入温度值，范围0~300"
                              placeholder-align='right'
-                             v-model='v.value' text-align='right' @on-enter='submit(v)'
-                             @on-blur='onChange(v)'
-                             :max="3" @on-change="submit(v)"></x-input>
+                             v-model='v.value' text-align='right'
+                             novalidate :icon-type='v.iconType'
+                             @on-change='onChange(v)'
+                             @on-enter='submit(v)'
+                             @on-blur='submit(v)'
+                             :max="3"></x-input>
                   </cell>
                 </div>
               </group>
@@ -139,18 +148,22 @@
               </div>
               <!--OtherSettings-->
               <group class="nextChioce clearfix whiteBg">
-                <x-switch class="item" title="恒功率使能" v-model="data.OtherSettings[0].value"></x-switch>
+                <x-switch class="item" title="恒功率使能" v-model="data.OtherSettings[0].value"
+                          @on-change='buttonSubmit(data.OtherSettings[0])'></x-switch>
                 <cell class="item" :title='data.OtherSettings[1].label'>
                   <x-input class="item-input" placeholder="请输入电压值，范围0~500"
                            placeholder-align='right'
                            v-model='data.OtherSettings[1].value' text-align='right'
+                           novalidate :icon-type='data.OtherSettings[1].iconType'
+                           @on-change='onChange(data.OtherSettings[1])'
                            @on-enter='submit(data.OtherSettings[1])'
-                           @on-blur='onChange(data.OtherSettings[1])'
-                           @on-change='submit(data.OtherSettings[1])'
+                           @on-blur='submit(data.OtherSettings[1])'
                            :max='3'></x-input>
                 </cell>
-                <x-switch class="item" title="缺相检测使能" v-model="data.OtherSettings[2].value"></x-switch>
-                <x-switch class="item" title="磁控开关复位使能" v-model="data.OtherSettings[3].value"></x-switch>
+                <x-switch class="item" title="缺相检测使能" v-model="data.OtherSettings[2].value"
+                          @on-change='buttonSubmit(data.OtherSettings[2])'></x-switch>
+                <x-switch class="item" title="磁控开关复位使能" v-model="data.OtherSettings[3].value"
+                          @on-change='buttonSubmit(data.OtherSettings[3])'></x-switch>
               </group>
             </li>
           </ul>
@@ -159,15 +172,16 @@
       <li v-if='index === 2'>
         <!--:style='"background-position: "+data.DisplaySelection[0].list[i][0]+"px "+data.DisplaySelection[0].list[i][1]+"px"'-->
         <ul class="displayer clearfix powerNumber button-box">
-          <li class="screenBox clearfix" v-for="(item,i) in 10">
-            <checker class='button-power button-display' type='radio'
-                     @on-change='submit(data.DisplaySelection[0].value)'
+          <li class="clearfix">
+            <checker class='button-display clearfix' type='radio'
+                     @on-change='onButtonEvent(data.DisplaySelection[0])'
                      v-model="data.DisplaySelection[0].value"
                      default-item-class="button-power-default button-display-default"
                      selected-item-class="button-power-selected">
-              <div class="button-btn screenBtn"></div>
-              <checker-item :key="i" :value="i">{{data.DisplaySelection[0].label}}
-              </checker-item>
+              <div class='screenBox button-power' v-for="(item,i) in 10">
+                <div class="button-btn screenBtn"></div>
+                <checker-item :key="i" :value="i">{{data.DisplaySelection[0].label}}</checker-item>
+              </div>
             </checker>
           </li>
         </ul>
@@ -184,18 +198,19 @@
                   <x-input class="item-input" placeholder="请输入时间，范围0 ~ 9999小时"
                            placeholder-align='right' typeof='number'
                            v-model='data.TimeSetting[0].value' text-align='right'
+                           novalidate :icon-type='data.TimeSetting[0].iconType'
+                           @on-change='onChange(data.TimeSetting[0])'
                            @on-enter='submit(data.TimeSetting[0])'
-                           @on-blur='onChange(data.TimeSetting[0])'
-                           @on-change='submit(data.TimeSetting[0])'
+                           @on-blur='submit(data.TimeSetting[0])'
                            :max='4'></x-input>
                 </cell>
                 <datetime class="item" v-model="data.TimeSetting[1].value" format="HH:mm"
                           :display-format="formatValueFunction"
-                          @on-change="onChange"
+                          @on-change="dateTimeSubmit(data.TimeSetting[1])"
                           :title="data.TimeSetting[1].label"></datetime>
                 <datetime class="item" v-model="data.TimeSetting[2].value" format="HH:mm"
                           :display-format="formatValueFunction"
-                          @on-change="onChange"
+                          @on-change="dateTimeSubmit(data.TimeSetting[2])"
                           :title="data.TimeSetting[2].label"></datetime>
               </group>
             </li>
@@ -206,7 +221,8 @@
                 <i></i><span>控制设定</span>
               </div>
               <group class="nextChioce clearfix whiteBg">
-                <x-switch class="item" title="控制设定" v-model="data.ControlSettings[0].value"></x-switch>
+                <x-switch class="item" title="控制设定" v-model="data.ControlSettings[0].value"
+                          @on-change='buttonSubmit(data.ControlSettings[0])'></x-switch>
               </group>
             </li>
           </ul>
@@ -419,6 +435,9 @@
               value: false,
               oldValue: false,
               type: '',
+              max: 500,
+              min: 0,
+              iconType: '',
               isFlag: false,
               label: '电压保护使能'
             },
@@ -428,6 +447,9 @@
               value: '',
               oldValue: '',
               type: '',
+              max: 500,
+              min: 0,
+              iconType: '',
               isFlag: false,
               label: '电压'
             },
@@ -437,6 +459,9 @@
               value: '',
               oldValue: '',
               type: '',
+              max: 500,
+              min: 0,
+              iconType: '',
               isFlag: false,
               label: '低压'
             },
@@ -446,6 +471,9 @@
               value: '',
               oldValue: '',
               type: '',
+              max: 500,
+              min: 0,
+              iconType: '',
               isFlag: false,
               label: '校准'
             }
@@ -457,6 +485,9 @@
               value: '',
               oldValue: '',
               type: '',
+              max: 100,
+              min: 0,
+              iconType: '',
               isFlag: false,
               label: '模块最高温度设定'
             },
@@ -466,6 +497,9 @@
               value: '',
               oldValue: '',
               type: '',
+              max: 300,
+              min: 0,
+              iconType: '',
               isFlag: false,
               label: '线盘温度保护点'
             },
@@ -475,6 +509,9 @@
               value: '',
               oldValue: '',
               type: '',
+              max: 300,
+              min: 0,
+              iconType: '',
               isFlag: false,
               label: '锅底温度保护点'
             }
@@ -486,6 +523,9 @@
               value: false,
               oldValue: false,
               type: '',
+              max: 500,
+              min: 0,
+              iconType: '',
               isFlag: false,
               label: '恒功率使能'
             },
@@ -495,6 +535,9 @@
               value: '',
               oldValue: '',
               type: '',
+              max: 500,
+              min: 0,
+              iconType: '',
               isFlag: false,
               label: '起始电压'
             },
@@ -504,6 +547,9 @@
               value: false,
               oldValue: false,
               type: '',
+              max: 500,
+              min: 0,
+              iconType: '',
               isFlag: false,
               label: '缺相检测使能'
             },
@@ -513,6 +559,9 @@
               value: false,
               oldValue: false,
               type: '',
+              max: 500,
+              min: 0,
+              iconType: '',
               isFlag: false,
               label: '磁控开关复位使能'
             }
@@ -524,6 +573,9 @@
               value: '',
               oldValue: '',
               type: '',
+              max: 9999,
+              min: 0,
+              iconType: '',
               isFlag: false,
               label: '授权工作时间'
             },
@@ -699,8 +751,9 @@
 
   .powerNumber {
     position: relative;
+    padding: 0 17px;
     .button-power {
-      padding: 12.5px 17px;
+      padding: 12.5px 0;
       .button-power-default {
         text-align: center;
         height: 25px;
